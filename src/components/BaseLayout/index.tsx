@@ -3,7 +3,7 @@ import { Layout, Menu, Icon } from 'antd';
 
 const { Header, Sider, Content } = Layout;
 
-const BaseLayout = () => {
+const BaseLayout = (props: any) => {
   const [collapsed, setCollapsed] = useState(false);
   return (
     <Layout>
@@ -42,7 +42,7 @@ const BaseLayout = () => {
             minHeight: 280
           }}
         >
-          Content
+          {props.children}
         </Content>
       </Layout>
     </Layout>
