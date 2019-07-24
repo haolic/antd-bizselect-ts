@@ -1,35 +1,55 @@
-import React from 'react';
-import { Checkbox } from 'antd';
-import './hBizContent.less';
-
-interface ItemData {
-  key: string;
-  status: boolean;
-  title: string;
-}
-interface BodyData {
-  key: string;
-  list: Array<ItemData>;
-  title: string;
-}
+import React, { useEffect, useState } from "react";
+import { Checkbox } from "antd";
+import "./hBizContent.less";
 
 interface BizSelectContentProps {
-  data?: Array<BodyData>;
+  data?: {
+    key: string;
+    title: string;
+    list: { title: string; key: string; status: boolean; unit: string }[];
+  }[];
 }
 
 const HBizContent = (props: BizSelectContentProps) => {
   const { data = [] } = props;
-  const isCheckAll = data.every(item => item.list.every(el => el.status));
-  const isCancelAll = data.every(item => item.list.every(el => !el.status));
+  const [bodyData, setBodyData] = useState(data);
+
+  const isCheckAll = bodyData.every(item => item.list.every(el => el.status));
+  const isCancelAll = bodyData.every(item => item.list.every(el => !el.status));
+
   return (
     <div className="h-biz-content">
       <div className="h-biz-header">
         <span>
-          <Checkbox checked={isCheckAll} />
+          <Checkbox
+            checked={isCheckAll}
+            onChange={e => {
+              const newData = bodyData.map(item => {
+                item.list = item.list.map(el => {
+                  el.status = e.target.checked;
+                  return el;
+                });
+                return item;
+              });
+              setBodyData(newData);
+            }}
+          />
           &nbsp;全选
         </span>
         <span>
-          <Checkbox checked={isCancelAll} />
+          <Checkbox
+            checked={isCancelAll}
+            onChange={e => {
+              const newData = bodyData.map(item => {
+                item.list = item.list.map(el => {
+                  el.status = !e.target.checked;
+                  return el;
+                });
+                return item;
+              });
+              setBodyData(newData);
+            }}
+          />
           &nbsp;全不选
         </span>
         <span>
@@ -38,7 +58,7 @@ const HBizContent = (props: BizSelectContentProps) => {
         </span>
       </div>
       <div className="h-biz-body">
-        {data.map(item => {
+        {bodyData.map(item => {
           return (
             <div key={item.key} className="body-section">
               <div>
