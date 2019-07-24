@@ -1,11 +1,13 @@
 import React from 'react';
-import mockData from './mockData';
+import BizSelect from '../../components/BizSelect';
 import './index.less';
 
-const BizSelect = () => {
-  return <div className="h-biz-select-container">
-    我是容器
-  </div>;
+const BizSelectPage = () => {
+  return (
+    <div className="biz-select-page-wrap">
+      <BizSelect title="更多" />
+    </div>
+  );
 };
 
-export default BizSelect;
+export default BizSelectPage;

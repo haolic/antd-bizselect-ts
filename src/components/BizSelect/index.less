@@ -1,0 +1,32 @@
+.h-biz-select-container {
+  display: inline-block;
+  min-width: 60px;
+  cursor: default;
+  .h-biz-title {
+    background: #c53d65;
+    width: 100%;
+    color: #fff;
+    padding: 1px 8px;
+    border-radius: 4px;
+  }
+  .h-biz-select-icon {
+    .anticon-right {
+      transition: transform 0.25s;
+      transform: rotate(0deg);
+    }
+  }
+  &:hover {
+    .h-biz-select-icon {
+      .anticon-right {
+        transition: transform 0.25s;
+        transform: rotate(90deg);
+      }
+    }
+  }
+}
+.h-biz-pop-wrap {
+  .ant-popover-inner-content {
+    padding: 0;
+    width: 350px;
+  }
+}

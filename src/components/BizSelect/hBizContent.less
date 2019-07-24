@@ -1,0 +1,30 @@
+.h-biz-content {
+  .h-biz-header {
+    height: 30px;
+    border-bottom: 1px solid #f90;
+    display: flex;
+    line-height: 30px;
+    padding: 3px 15px;
+    box-sizing: content-box;
+    span + span {
+      margin-left: 15px;
+    }
+  }
+  .h-biz-body {
+    padding: 5px 15px;
+    .body-section {
+      & + .body-section {
+        margin-top: 7px;
+      }
+    }
+    .section-items-wrap {
+      padding: 0px 15px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      .section-items {
+        margin: 5px 7px;
+      }
+    }
+  }
+}
