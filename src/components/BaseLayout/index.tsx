@@ -21,7 +21,7 @@ const BaseLayout = (props: any) => {
           </Menu>
         </Sider>
         <Layout>
-          <Header style={{ background: '#fff', padding: 0 }}>
+          <Header style={{ background: '#fff', padding: '0 15px 0' }}>
             <Icon
               className="trigger"
               type={collapsed ? 'menu-unfold' : 'menu-fold'}
