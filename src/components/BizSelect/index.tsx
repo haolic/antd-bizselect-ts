@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Icon, Popover } from "antd";
 import HBizContent from "./HBizContent";
 import "./index.less";
@@ -18,7 +18,6 @@ const BizSelect = (props: BizSelectProps) => {
       <Popover
         content={<HBizContent data={props.data} />}
         title={null}
-        visible
         trigger="hover"
         placement="bottom"
         getPopupContainer={p => {
