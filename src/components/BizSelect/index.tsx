@@ -1,20 +1,23 @@
-import React from 'react';
-import mockData from './mockData';
-import { Icon, Popover } from 'antd';
-import HBizContent from './HBizContent';
-import './index.less';
+import React from "react";
+import { Icon, Popover } from "antd";
+import HBizContent from "./HBizContent";
+import "./index.less";
 
 interface BizSelectProps {
   title?: string;
+  data?: {
+    key: string;
+    title: string;
+    list: { title: string; key: string; status: boolean; unit: string }[];
+  }[];
 }
 
 const BizSelect = (props: BizSelectProps) => {
   return (
     <div className="h-biz-select-container">
       <Popover
-        content={<HBizContent data={mockData} />}
+        content={<HBizContent data={props.data} />}
         title={null}
-        visible
         trigger="hover"
         placement="bottom"
         getPopupContainer={p => {
