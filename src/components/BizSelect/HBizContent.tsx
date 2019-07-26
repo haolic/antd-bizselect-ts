@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Checkbox } from 'antd';
+import { Checkbox, Button } from 'antd';
 import './hBizContent.less';
 
 interface BizSelectContentProps {
@@ -83,8 +83,9 @@ const HBizContent = (props: BizSelectContentProps) => {
           &nbsp;全不选
         </span>
         <span>
-          <Checkbox onChange={toggleAllChange} />
-          &nbsp;反选
+          <Button size="small" onClick={toggleAllChange}>
+            反选
+          </Button>
         </span>
       </div>
       <div className="h-biz-body">
@@ -93,6 +94,10 @@ const HBizContent = (props: BizSelectContentProps) => {
             <div key={item.key} className="body-section">
               <div>
                 <Checkbox
+                  indeterminate={
+                    !item.list.every(el => el.status) &&
+                    !item.list.every(el => !el.status)
+                  }
                   checked={item.list.every(el => el.status)}
                   onChange={e => {
                     sectionCheck(e, idx);
