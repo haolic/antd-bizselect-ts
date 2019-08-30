@@ -6,16 +6,23 @@ const { Header, Sider, Content } = Layout;
 
 const BaseLayout = (props: any) => {
   const [collapsed, setCollapsed] = useState(false);
+  const pathName = window.location.pathname.split('/')[1];
   return (
     <BrowserRouter>
       <Layout>
         <Sider trigger={null} collapsible collapsed={collapsed}>
           <div className="logo" />
-          <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}>
-            <Menu.Item key="1">
+          <Menu theme="dark" mode="inline" defaultSelectedKeys={[pathName]}>
+            <Menu.Item key="BizSelect">
               <Link to="/BizSelect">
-                <Icon type="user" />
-                <span>BizSelect</span>
+                <Icon type="snippets" />
+                <span>业务选择器</span>
+              </Link>
+            </Menu.Item>
+            <Menu.Item key="OrderTable">
+              <Link to="/OrderTable">
+                <Icon type="unordered-list" />
+                <span>排序表格</span>
               </Link>
             </Menu.Item>
           </Menu>
