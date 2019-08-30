@@ -1,5 +1,5 @@
 import React, { useState, ReactElement } from 'react';
-import { Table, Input, Button } from 'antd';
+import { Table, Input, Button, Switch } from 'antd';
 import './index.less';
 
 interface Record {
@@ -9,7 +9,7 @@ interface Record {
   width?: number;
 }
 const defaultEditRow: string[] = [];
-const defDataSource: Record[] = [
+const defDataSource = [
   {
     key: '1',
     name: '百度',
@@ -24,7 +24,19 @@ const defDataSource: Record[] = [
   {
     key: '3',
     name: '淘宝',
-    address: 'http://www.taobao.com'
+    address: 'http://www.taobao.com',
+    children: [{
+      key: '3-1',
+      name: 't百度dd',
+      address: 'http://www.baidu.com',
+      width: 100,
+      children: [{
+        key: '3-1-1',
+        name: 'ddd百度',
+        address: 'http://www.baidu.com',
+        width: 100
+      }]
+    }]
   },
   {
     key: '4',
@@ -81,6 +93,14 @@ const OrderTable = () => {
         )
     },
     {
+      title: '是否隐藏',
+      dataIndex: 'isHide',
+      key: 'isHide',
+      render: (text: string, record: Record, index: number): ReactElement => (
+        <Switch size="small" defaultChecked />
+      )
+    },
+    {
       title: 'Option',
       dataIndex: 'option',
       key: 'option',
@@ -94,6 +114,12 @@ const OrderTable = () => {
               onClick={() => edit(record)}
             >
               {editingRow.includes(record.key) ? '保存' : '编辑'}
+            </Button>
+            <Button size="small" className="option-item">
+              +
+            </Button>
+            <Button size="small" className="option-item">
+              +子菜单
             </Button>
             <Button size="small" className="option-item">
               删除
