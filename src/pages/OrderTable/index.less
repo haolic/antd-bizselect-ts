@@ -4,8 +4,21 @@
   justify-content: space-around;
   align-items: center;
   .option-item {
+    cursor: pointer;
+    width: 30px;
+    transition: color 0.25s;
+    &:hover {
+      color: #c53d65;
+    }
     + .option-item {
       margin-left: 8px;
+    }
+  }
+  .disabled-option-item {
+    cursor: not-allowed;
+    color: #ddd;
+    &:hover {
+      color: #ddd;
     }
   }
 }
