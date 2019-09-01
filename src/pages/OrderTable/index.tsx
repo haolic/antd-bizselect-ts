@@ -1,5 +1,5 @@
 import React, { useState, ReactElement } from "react";
-import { Table, Input, Switch, Icon } from "antd";
+import { Table, Input, Switch, Icon, Popconfirm } from "antd";
 import "./index.less";
 
 interface Record {
@@ -7,7 +7,9 @@ interface Record {
   name: string;
   address: string;
   width?: number;
+  [propName: string]: any;
 }
+const defaultEditingRow = { key: "", name: "", address: "" };
 const defDataSource = [
   {
     key: "1",
@@ -53,38 +55,72 @@ const defDataSource = [
   }
 ];
 const OrderTable = () => {
-  const [editingRow, setEditingRow] = useState("");
+  const [editingRow, setEditingRow] = useState(defaultEditingRow);
   const [dataSource, setDataSource] = useState(defDataSource);
   const toggleEdit = (record: Record) => {
-    if (editingRow) {
-      setEditingRow("");
+    if (editingRow.key) {
+      setEditingRow(defaultEditingRow);
     } else {
-      setEditingRow(record.key);
+      setEditingRow({
+        key: record.key,
+        name: record.name,
+        address: record.address
+      });
     }
   };
-  const inputing = (val: string, idx: number, record: Record) => {
-    record.address = val;
+  const inputing = (
+    val: string,
+    idx: number,
+    record: Record,
+    keyName: string
+  ) => {
+    record[keyName] = val;
     const newRowData = [...dataSource];
     setDataSource(newRowData);
+  };
+  const cancelInput = (record: Record) => {
+    record.address = editingRow.address;
+    record.name = editingRow.name;
+    const newRowData = [...dataSource];
+    setEditingRow(defaultEditingRow);
+    setDataSource(newRowData);
+  };
+  const deleteConfirm = (idx: number) => {
+    console.log("删除");
   };
   const columns = [
     {
       title: "Name",
       dataIndex: "name",
       key: "name",
-      width: 150
+      width: 250,
+      render: (text: string, record: Record, index: number): ReactElement =>
+        editingRow.key === record.key ? (
+          <Input
+            value={text}
+            style={{
+              width: 100
+            }}
+            size="small"
+            onChange={e => {
+              inputing(e.target.value, index, record, "name");
+            }}
+          ></Input>
+        ) : (
+          <span>{text}</span>
+        )
     },
     {
       title: "Address",
       dataIndex: "address",
       key: "address",
       render: (text: string, record: Record, index: number): ReactElement =>
-        editingRow === record.key ? (
+        editingRow.key === record.key ? (
           <Input
             value={text}
             size="small"
             onChange={e => {
-              inputing(e.target.value, index, record);
+              inputing(e.target.value, index, record, "address");
             }}
           ></Input>
         ) : (
@@ -107,32 +143,37 @@ const OrderTable = () => {
       dataIndex: "option",
       key: "option",
       width: 200,
-      render: (t: string, record: Record) => {
+      render: (t: string, record: Record, idx: number) => {
         return (
           <div className="option-col">
             <span
               className={`${
-                !editingRow || editingRow === record.key
+                !editingRow.key || editingRow.key === record.key
                   ? ""
                   : "disabled-option-item"
               } option-item`}
               onClick={() => {
-                if (!editingRow) {
+                if (!editingRow.key) {
                   toggleEdit(record);
                 }
-                if (editingRow === record.key) {
+                if (editingRow.key === record.key) {
                   toggleEdit(record);
                 }
               }}
             >
-              {editingRow === record.key ? (
+              {editingRow.key === record.key ? (
                 <Icon type="check" />
               ) : (
                 <Icon type="edit" />
               )}
             </span>
-            <span className="option-item" onClick={() => setEditingRow("")}>
-              {editingRow === record.key ? <Icon type="close" /> : null}
+            <span
+              className="option-item"
+              onClick={() => {
+                cancelInput(record);
+              }}
+            >
+              {editingRow.key === record.key ? <Icon type="close" /> : null}
             </span>
             <span className="option-item">
               <Icon type="plus-circle" />
@@ -140,9 +181,16 @@ const OrderTable = () => {
             <span className="option-item">
               <Icon type="enter" />
             </span>
-            <span className="option-item">
+            <Popconfirm
+              placement="topLeft"
+              title="确定删除？"
+              trigger="click"
+              okText="确定"
+              cancelText="取消"
+              onConfirm={() => deleteConfirm(idx)}
+            >
               <Icon type="delete" />
-            </span>
+            </Popconfirm>
           </div>
         );
       }
