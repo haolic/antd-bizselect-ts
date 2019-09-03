@@ -1,62 +1,99 @@
-import React, { useState, ReactElement } from "react";
-import { Table, Input, Switch, Icon, Popconfirm } from "antd";
-import "./index.less";
+import React, { useState, ReactElement } from 'react';
+import { Table, Input } from 'antd';
+import TableOptionCol from './components/TableOptionCol';
+import './index.less';
 
 interface Record {
   key: string;
   name: string;
   address: string;
-  width?: number;
   [propName: string]: any;
 }
-const defaultEditingRow = { key: "", name: "", address: "" };
+
+const loopAddKey = (data: any, pKey: string) => {
+  const newData = data.map((item: any, idx: number) => {
+    item.key = pKey ? `${pKey}-${idx.toString()}` : idx.toString();
+    if (item.children) {
+      item.children = loopAddKey(item.children, item.key);
+    }
+    return item;
+  });
+  return newData;
+};
+const useDealKeyData = (data: any) => {
+  const newData = loopAddKey(data, '');
+  return useState(newData);
+};
+const deleteRow = (arr: any, record: Record, idx: number) => {
+  const newArr = [...arr];
+  if (newArr.filter(el => el.key === record.key).length) {
+    return newArr.filter(el => el.key !== record.key);
+  } else {
+    for (let el of newArr) {
+      if (el.children) {
+        el.children = [...deleteRow(el.children, record, idx)];
+        if (!el.children.length) {
+          el.children = undefined;
+        }
+      }
+    }
+    return newArr;
+  }
+};
+const defaultEditingRow = { key: '', name: '', address: '' };
 const defDataSource = [
   {
-    key: "1",
-    name: "百度",
-    address: "http://www.baidu.com",
-    width: 100
+    key: '1',
+    name: '百度',
+    address: 'http://www.baidu.com',
+    status: 'show'
   },
   {
-    key: "2",
-    name: "淘宝",
-    address: "http://www.taobao.com"
+    key: '2',
+    name: '淘宝',
+    address: 'http://www.taobao.com',
+    status: 'show'
   },
   {
-    key: "3",
-    name: "淘宝",
-    address: "http://www.taobao.com",
+    key: '3',
+    name: '淘宝',
+    address: 'http://www.taobao.com',
+    status: 'hidden',
     children: [
       {
-        key: "3-1",
-        name: "t百度dd",
-        address: "http://www.baidu.com",
-        width: 100,
+        key: '3-1',
+        name: 't百度dd',
+        address: 'http://www.baidu.com',
+        status: 'show',
         children: [
           {
-            key: "3-1-1",
-            name: "ddd百度",
-            address: "http://www.baidu.com",
-            width: 100
+            key: '3-1-1',
+            name: 'ddd百度',
+            address: 'http://www.baidu.com',
+            status: 'show'
           }
         ]
       }
     ]
   },
   {
-    key: "4",
-    name: "淘宝",
-    address: "http://www.taobao.com"
+    key: '4',
+    name: '淘宝',
+    address: 'http://www.taobao.com',
+    status: 'show'
   },
   {
-    key: "5",
-    name: "淘宝",
-    address: "http://www.taobao.com"
+    key: '5',
+    name: '淘宝',
+    address: 'http://www.taobao.com',
+    status: 'hidden'
   }
 ];
+const defaultExplan: any = [];
 const OrderTable = () => {
+  const [explanRowKeys, setExplanRowKeys] = useState(defaultExplan);
   const [editingRow, setEditingRow] = useState(defaultEditingRow);
-  const [dataSource, setDataSource] = useState(defDataSource);
+  const [dataSource, setDataSource] = useDealKeyData(defDataSource);
   const toggleEdit = (record: Record) => {
     if (editingRow.key) {
       setEditingRow(defaultEditingRow);
@@ -85,14 +122,35 @@ const OrderTable = () => {
     setEditingRow(defaultEditingRow);
     setDataSource(newRowData);
   };
-  const deleteConfirm = (idx: number) => {
-    console.log("删除");
+  const deleteConfirm = (record: Record, idx: number, editingRow: any) => {
+    const newDataSource = deleteRow(dataSource, record, idx);
+    setDataSource(newDataSource);
+  };
+  const addRow = (record: Record, idx: number, type: string) => {
+    const initRecord = {
+      name: '',
+      address: '',
+      key: record.key + `-${record.children ? record.children.length : 0}`
+    };
+    if (type === 'subLevel') {
+      if (record.children) {
+        record.children.push(initRecord);
+      } else {
+        record.children = [initRecord];
+      }
+      setExplanRowKeys([...explanRowKeys, record.key]);
+      setEditingRow(initRecord);
+    } else {
+      // 添加当前层级；
+      
+    }
+    setDataSource([...dataSource]);
   };
   const columns = [
     {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
+      title: 'Name',
+      dataIndex: 'name',
+      key: 'name',
       width: 250,
       render: (text: string, record: Record, index: number): ReactElement =>
         editingRow.key === record.key ? (
@@ -103,7 +161,7 @@ const OrderTable = () => {
             }}
             size="small"
             onChange={e => {
-              inputing(e.target.value, index, record, "name");
+              inputing(e.target.value, index, record, 'name');
             }}
           ></Input>
         ) : (
@@ -111,16 +169,16 @@ const OrderTable = () => {
         )
     },
     {
-      title: "Address",
-      dataIndex: "address",
-      key: "address",
+      title: 'Address',
+      dataIndex: 'address',
+      key: 'address',
       render: (text: string, record: Record, index: number): ReactElement =>
         editingRow.key === record.key ? (
           <Input
             value={text}
             size="small"
             onChange={e => {
-              inputing(e.target.value, index, record, "address");
+              inputing(e.target.value, index, record, 'address');
             }}
           ></Input>
         ) : (
@@ -130,69 +188,18 @@ const OrderTable = () => {
         )
     },
     {
-      title: "隐藏",
-      dataIndex: "isHide",
-      key: "isHide",
-      width: 50,
-      render: (text: string, record: Record, index: number): ReactElement => (
-        <Switch size="small" defaultChecked />
-      )
-    },
-    {
-      title: "Option",
-      dataIndex: "option",
-      key: "option",
+      title: 'Option',
+      dataIndex: 'option',
+      key: 'option',
       width: 200,
       render: (t: string, record: Record, idx: number) => {
-        return (
-          <div className="option-col">
-            <span
-              className={`${
-                !editingRow.key || editingRow.key === record.key
-                  ? ""
-                  : "disabled-option-item"
-              } option-item`}
-              onClick={() => {
-                if (!editingRow.key) {
-                  toggleEdit(record);
-                }
-                if (editingRow.key === record.key) {
-                  toggleEdit(record);
-                }
-              }}
-            >
-              {editingRow.key === record.key ? (
-                <Icon type="check" />
-              ) : (
-                <Icon type="edit" />
-              )}
-            </span>
-            <span
-              className="option-item"
-              onClick={() => {
-                cancelInput(record);
-              }}
-            >
-              {editingRow.key === record.key ? <Icon type="close" /> : null}
-            </span>
-            <span className="option-item">
-              <Icon type="plus-circle" />
-            </span>
-            <span className="option-item">
-              <Icon type="enter" />
-            </span>
-            <Popconfirm
-              placement="topLeft"
-              title="确定删除？"
-              trigger="click"
-              okText="确定"
-              cancelText="取消"
-              onConfirm={() => deleteConfirm(idx)}
-            >
-              <Icon type="delete" />
-            </Popconfirm>
-          </div>
-        );
+        return TableOptionCol(t, record, idx, editingRow, {
+          cancelInput,
+          deleteConfirm,
+          toggleEdit,
+          inputing,
+          addRow
+        });
       }
     }
   ];
@@ -203,6 +210,10 @@ const OrderTable = () => {
         dataSource={dataSource}
         columns={columns}
         pagination={false}
+        expandedRowKeys={explanRowKeys}
+        onExpandedRowsChange={v => {
+          setExplanRowKeys(v);
+        }}
       ></Table>
     </div>
   );

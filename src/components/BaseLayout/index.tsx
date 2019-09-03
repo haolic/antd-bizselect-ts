@@ -6,7 +6,7 @@ const { Header, Sider, Content } = Layout;
 
 const BaseLayout = (props: any) => {
   const [collapsed, setCollapsed] = useState(false);
-  const pathName = window.location.pathname.split('/')[1];
+  const pathName = window.location.pathname.split('/')[1] || 'BizSelect';
   return (
     <BrowserRouter>
       <Layout>
